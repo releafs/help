@@ -1,4 +1,3 @@
-# Step 2: Connect MetaMask to Base Network
 *Objective:* Add the Base network to MetaMask to enable blockchain transactions.
 
 ---
