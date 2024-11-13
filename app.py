@@ -46,6 +46,9 @@ Based on your responses, we'll generate a tailored guide to help you set up and 
 if "user_needs" not in st.session_state:
     st.session_state.user_needs = {step: None for step in steps.keys()}
 
+# Initialize needs_tutorial outside the button block to avoid scope issues
+needs_tutorial = False
+
 # Define custom CSS for clickable divs
 st.markdown("""
     <style>
@@ -103,7 +106,7 @@ for step_name, step_info in steps.items():
 # Generate tutorial based on responses
 if st.button("Generate Customized Guide"):
     st.write("### Your Customized Releafs Guide")
-    needs_tutorial = False
+    needs_tutorial = False  # Reset inside this block in case the button is clicked multiple times
     
     # Display tutorials for steps marked as "Yes"
     for step_name, step_info in steps.items():
