@@ -46,10 +46,13 @@ Based on your responses, we'll generate a tailored guide to help you set up and 
 user_needs = {}
 needs_tutorial = False
 
-# Improved UI for questionnaire with button-like style
+# Improved UI for questionnaire with question prompts and button-like style
 st.header("Questionnaire")
 for step_name, step_info in steps.items():
-    # Create two buttons for Yes/No selection
+    # Display each question before the buttons
+    st.write(f"**{step_info['question']}**")
+    
+    # Create two columns for the Yes and No button choices
     col1, col2 = st.columns(2)
     with col1:
         if st.button(f"Yes, I need help with {step_name}"):
