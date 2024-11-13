@@ -11,7 +11,7 @@ def load_step_content(step_file):
     else:
         return "Content not available."
 
-# Define the steps with questions, file paths, and specific links if needed
+# Define the steps with questions and file paths
 steps = {
     "Set Up MetaMask Wallet": {
         "question": "Do you need help setting up a MetaMask wallet?",
@@ -83,18 +83,21 @@ if st.button("Generate Customized Guide"):
     # Display tutorials for each step title, and content only for steps marked as "Yes"
     for idx, (step_name, step_info) in enumerate(steps.items(), start=1):
         st.subheader(f"Step {idx}: {step_name}")
+        
         if st.session_state.user_needs[step_name] == "Yes":
-            # Load the content or show hyperlink if it's for the allowlist step
-            content = load_step_content(step_info["file"])
-            st.markdown(content)
-            
-            # Include hyperlink if this is the Allowlist step
-            if "link" in step_info:
-                st.markdown(f"[Apply for the allowlist here]({step_info['link']})")
-            
+            # For the Allowlist step, include a hyperlink
+            if step_name == "Apply for Allowlist Access":
+                st.markdown(
+                    f"[Click here to apply for the allowlist.]({step_info['link']})",
+                    unsafe_allow_html=True
+                )
+            else:
+                # Load content for other steps
+                content = load_step_content(step_info["file"])
+                st.markdown(content)
             needs_tutorial = True
         else:
-            # Display only "No assistance required" if the user selected No
+            # Display "No assistance required" only for steps marked "No"
             st.write("_No assistance required for this step._")
 
     if not needs_tutorial:
