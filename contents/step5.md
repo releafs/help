@@ -1,4 +1,3 @@
-# Step 5: Mint Releafs Tokens
 *Objective:* Mint your Releafs token on OpenSea using MetaMask.
 
 ---
