@@ -85,7 +85,9 @@ if st.button("Generate Customized Guide"):
         # Display a larger, bold header for each step title
         st.markdown(f"<h2 style='font-size:24px;'>Step {idx}: {step_name}</h2>", unsafe_allow_html=True)
         
+        # Only display content if "Yes" was selected
         if st.session_state.user_needs[step_name] == "Yes":
+            # For the Allowlist step, include a hyperlink
             if step_name == "Apply for Allowlist Access":
                 st.markdown(
                     f"[Click here to apply for the allowlist.]({step_info['link']})",
