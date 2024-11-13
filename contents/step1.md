@@ -1,4 +1,3 @@
-# Step 1: Set Up MetaMask Wallet
 *Objective:* Install MetaMask and create a secure wallet to manage digital assets and interact with decentralized applications.
 
 ---
