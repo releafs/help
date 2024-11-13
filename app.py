@@ -11,7 +11,7 @@ def load_step_content(step_file):
     else:
         return "Content not available."
 
-# Define the steps with corresponding questions and Markdown file names
+# Define the steps with questions and file paths
 steps = {
     "Set Up MetaMask Wallet": {
         "question": "Do you need help setting up a MetaMask wallet?",
@@ -35,34 +35,36 @@ steps = {
     }
 }
 
-# Set up the app title and initial instructions
+# Set up the app title and introduction
 st.title("Releafs Support System")
 st.write("""
-Welcome to the Releafs Support System! Navigate through the tabs below and let us know which steps you need assistance with. 
-Based on your responses, we'll generate a customized guide to help you set up and use your MetaMask wallet to mint Releafs tokens.
+Welcome to the Releafs Support System! Please answer the questions below to let us know which steps you need assistance with. 
+Based on your responses, we'll generate a tailored guide to help you set up and use your MetaMask wallet to mint Releafs tokens.
 """)
 
-# Initialize user needs dictionary to store responses
+# Initialize a dictionary to store user responses
 user_needs = {}
-
-# Create tabs for each question
-tabs = st.tabs([step_name for step_name in steps.keys()])
-
-# Populate each tab with the corresponding question
-for i, (step_name, step_info) in enumerate(steps.items()):
-    with tabs[i]:
-        user_needs[step_name] = st.radio(step_info["question"], ("Yes", "No"))
-
-# Initialize needs_tutorial outside the button block
 needs_tutorial = False
 
-# Button to generate tutorial based on user responses
-if st.button("Generate Tutorial"):
+# Improved UI for questionnaire with button-like style
+st.header("Questionnaire")
+for step_name, step_info in steps.items():
+    # Create two buttons for Yes/No selection
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button(f"Yes, I need help with {step_name}"):
+            user_needs[step_name] = "Yes"
+    with col2:
+        if st.button(f"No, I am comfortable with {step_name}"):
+            user_needs[step_name] = "No"
+
+# Generate tutorial based on responses
+if st.button("Generate Customized Guide"):
     st.write("### Your Customized Releafs Guide")
     
-    # Display selected steps based on user input
+    # Display tutorials for steps marked as "Yes"
     for step_name, step_info in steps.items():
-        if user_needs[step_name] == "Yes":
+        if user_needs.get(step_name) == "Yes":
             st.subheader(step_name)
             content = load_step_content(step_info["file"])
             st.markdown(content)
@@ -71,7 +73,7 @@ if st.button("Generate Tutorial"):
     if not needs_tutorial:
         st.info("It seems like you don’t need any tutorials. If you still need help, feel free to review the questions or reach out to our support team.")
 
-# Final congratulations message if they went through all selected tutorials
+# Completion message
 if needs_tutorial:
     st.write("""
     ### Congratulations!
