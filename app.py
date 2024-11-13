@@ -46,26 +46,51 @@ Based on your responses, we'll generate a tailored guide to help you set up and 
 if "user_needs" not in st.session_state:
     st.session_state.user_needs = {step: None for step in steps.keys()}
 
-# Questionnaire with clear radio buttons for selections
+# Define custom CSS to style the radio buttons to look like clickable buttons
+st.markdown("""
+    <style>
+    div[role="radiogroup"] > label {
+        display: inline-block;
+        width: 45%;
+        margin: 5px;
+        padding: 10px;
+        text-align: center;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        cursor: pointer;
+    }
+    div[role="radiogroup"] > label:hover {
+        background-color: #e0e0e0;
+    }
+    div[role="radiogroup"] > label[data-selected="true"] {
+        background-color: lightgrey;
+        color: black;
+        font-weight: bold;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Questionnaire with larger question fonts and custom-styled radio buttons for Yes/No selection
 st.header("Questionnaire")
 for step_name, step_info in steps.items():
-    # Display the question with a radio selection
-    st.write(f"**{step_info['question']}**")
+    # Display the question in a larger font using Markdown
+    st.markdown(f"<h3 style='font-size:22px;'>{step_info['question']}</h3>", unsafe_allow_html=True)
+    
+    # Use a radio button to allow "Yes" or "No" selection and store in session state
     st.session_state.user_needs[step_name] = st.radio(
-        f"Choose for {step_name}",
-        options=["Yes, I need help", "No, I am comfortable"],
-        index=1 if st.session_state.user_needs[step_name] == "No" else 0,
-        key=step_name
+        "",
+        options=["Yes, I need help with " + step_name, "No, I am comfortable with " + step_name],
+        index=0 if st.session_state.user_needs[step_name] == "Yes" else 1
     )
 
 # Generate tutorial based on responses
 if st.button("Generate Customized Guide"):
     st.write("### Your Customized Releafs Guide")
-    needs_tutorial = False  # Reset inside this block in case the button is clicked multiple times
+    needs_tutorial = False
     
     # Display tutorials for steps marked as "Yes"
     for step_name, step_info in steps.items():
-        if st.session_state.user_needs[step_name] == "Yes, I need help":
+        if st.session_state.user_needs[step_name].startswith("Yes"):
             st.subheader(step_name)
             content = load_step_content(step_info["file"])
             st.markdown(content)
