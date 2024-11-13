@@ -42,14 +42,11 @@ Welcome to the Releafs Support System! Please answer the questions below to let 
 Based on your responses, we'll generate a tailored guide to help you set up and use your MetaMask wallet to mint Releafs tokens.
 """)
 
-# Initialize session state to remember button clicks
+# Initialize session state to remember selections
 if "user_needs" not in st.session_state:
     st.session_state.user_needs = {step: None for step in steps.keys()}
 
-# Initialize needs_tutorial outside the button block to avoid scope issues
-needs_tutorial = False
-
-# Define custom CSS for button-like divs with selection indication
+# Define custom CSS for clickable divs
 st.markdown("""
     <style>
     .option-button {
@@ -86,22 +83,27 @@ for step_name, step_info in steps.items():
     # Define Yes and No divs with conditional styling for selected states
     col1, col2 = st.columns(2)
     with col1:
-        if st.button(f"Yes, I need help with {step_name}", key=f"yes_{step_name}"):
-            st.session_state.user_needs[step_name] = "Yes"
-        # Show the selection as highlighted if selected
         yes_class = "selected-yes" if st.session_state.user_needs[step_name] == "Yes" else "unselected"
-        st.markdown(f"<div class='option-button {yes_class}'>Yes, I need help with {step_name}</div>", unsafe_allow_html=True)
+        if st.markdown(
+            f"<div class='option-button {yes_class}' onclick='document.querySelector(\"#yes_{step_name}\").click()'>"
+            f"Yes, I need help with {step_name}</div>",
+            unsafe_allow_html=True
+        ):
+            st.session_state.user_needs[step_name] = "Yes"
 
     with col2:
-        if st.button(f"No, I am comfortable with {step_name}", key=f"no_{step_name}"):
-            st.session_state.user_needs[step_name] = "No"
-        # Show the selection as highlighted if selected
         no_class = "selected-no" if st.session_state.user_needs[step_name] == "No" else "unselected"
-        st.markdown(f"<div class='option-button {no_class}'>No, I am comfortable with {step_name}</div>", unsafe_allow_html=True)
+        if st.markdown(
+            f"<div class='option-button {no_class}' onclick='document.querySelector(\"#no_{step_name}\").click()'>"
+            f"No, I am comfortable with {step_name}</div>",
+            unsafe_allow_html=True
+        ):
+            st.session_state.user_needs[step_name] = "No"
 
 # Generate tutorial based on responses
 if st.button("Generate Customized Guide"):
     st.write("### Your Customized Releafs Guide")
+    needs_tutorial = False
     
     # Display tutorials for steps marked as "Yes"
     for step_name, step_info in steps.items():
