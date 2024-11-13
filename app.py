@@ -47,6 +47,9 @@ Based on your responses, we'll generate a tailored guide to help you set up and 
 if "user_needs" not in st.session_state:
     st.session_state.user_needs = {step: None for step in steps.keys()}
 
+# Initialize needs_tutorial outside the button block to avoid scope issues
+needs_tutorial = False
+
 # Questionnaire with larger question fonts and button color indication on selection
 st.header("Questionnaire")
 for idx, (step_name, step_info) in enumerate(steps.items(), start=1):
@@ -58,29 +61,31 @@ for idx, (step_name, step_info) in enumerate(steps.items(), start=1):
     with col1:
         if st.button(
             f"{'✅ ' if st.session_state.user_needs[step_name] == 'Yes' else ''}Yes, I need help with {step_name}",
-            key=f"yes_{step_name}"
+            key=f"yes_{step_name}",
+            help="Click to select Yes",
+            args=(step_name, "Yes")
         ):
             st.session_state.user_needs[step_name] = "Yes"
 
     with col2:
         if st.button(
             f"{'✅ ' if st.session_state.user_needs[step_name] == 'No' else ''}No, I am comfortable with {step_name}",
-            key=f"no_{step_name}"
+            key=f"no_{step_name}",
+            help="Click to select No",
+            args=(step_name, "No")
         ):
             st.session_state.user_needs[step_name] = "No"
     
 # Generate tutorial based on responses
 if st.button("Generate Customized Guide"):
     st.write("### Your Customized Releafs Guide")
-    needs_tutorial = False
     
-    # Display each step title once, and content only if marked "Yes"
+    # Display tutorials for each step title, and content only for steps marked as "Yes"
     for idx, (step_name, step_info) in enumerate(steps.items(), start=1):
         st.subheader(f"Step {idx}: {step_name}")
         
-        # Display content if the user needs assistance; otherwise, just the title with a "No assistance" message
         if st.session_state.user_needs[step_name] == "Yes":
-            # For the Allowlist step, include a hyperlink instead of loading content
+            # For the Allowlist step, include a hyperlink
             if step_name == "Apply for Allowlist Access":
                 st.markdown(
                     f"[Click here to apply for the allowlist.]({step_info['link']})",
@@ -92,6 +97,7 @@ if st.button("Generate Customized Guide"):
                 st.markdown(content)
             needs_tutorial = True
         else:
+            # Display "No assistance required" only for steps marked "No"
             st.write("_No assistance required for this step._")
 
     if not needs_tutorial:
