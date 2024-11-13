@@ -42,28 +42,42 @@ Welcome to the Releafs Support System! Please answer the questions below to let 
 Based on your responses, we'll generate a tailored guide to help you set up and use your MetaMask wallet to mint Releafs tokens.
 """)
 
-# Initialize session state to remember checkbox selections
+# Initialize session state to remember button clicks
 if "user_needs" not in st.session_state:
     st.session_state.user_needs = {step: None for step in steps.keys()}
 
-# Questionnaire with improved checkbox styling
+# Initialize needs_tutorial outside the button block to avoid scope issues
+needs_tutorial = False
+
+# Questionnaire with larger question fonts and button color indication on selection
 st.header("Questionnaire")
 for step_name, step_info in steps.items():
     # Display the question in a larger font using Markdown
     st.markdown(f"<h3 style='font-size:22px;'>{step_info['question']}</h3>", unsafe_allow_html=True)
     
-    # Checkbox options for "Yes" and "No"
+    # Define Yes and No buttons with conditional styling for selected states
     col1, col2 = st.columns(2)
     with col1:
-        st.session_state.user_needs[step_name] = st.checkbox(f"Yes, I need help with {step_name}", 
-                                                             value=(st.session_state.user_needs[step_name] == "Yes"))
-    with col2:
-        st.session_state.user_needs[step_name] = "No" if not st.session_state.user_needs[step_name] else "Yes"
+        if st.button(
+            f"{'✅ ' if st.session_state.user_needs[step_name] == 'Yes' else ''}Yes, I need help with {step_name}",
+            key=f"yes_{step_name}",
+            help="Click to select Yes",
+            args=(step_name, "Yes")
+        ):
+            st.session_state.user_needs[step_name] = "Yes"
 
+    with col2:
+        if st.button(
+            f"{'✅ ' if st.session_state.user_needs[step_name] == 'No' else ''}No, I am comfortable with {step_name}",
+            key=f"no_{step_name}",
+            help="Click to select No",
+            args=(step_name, "No")
+        ):
+            st.session_state.user_needs[step_name] = "No"
+    
 # Generate tutorial based on responses
 if st.button("Generate Customized Guide"):
     st.write("### Your Customized Releafs Guide")
-    needs_tutorial = False
     
     # Display tutorials for steps marked as "Yes"
     for step_name, step_info in steps.items():
