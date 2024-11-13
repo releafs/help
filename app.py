@@ -42,32 +42,37 @@ Welcome to the Releafs Support System! Please answer the questions below to let 
 Based on your responses, we'll generate a tailored guide to help you set up and use your MetaMask wallet to mint Releafs tokens.
 """)
 
-# Initialize a dictionary to store user responses
-user_needs = {}
-needs_tutorial = False
+# Initialize session state to remember button clicks
+if "user_needs" not in st.session_state:
+    st.session_state.user_needs = {step: None for step in steps.keys()}
 
-# Improved UI for questionnaire with question prompts and button-like style
+# Questionnaire with larger question fonts and button color indication on selection
 st.header("Questionnaire")
 for step_name, step_info in steps.items():
-    # Display each question before the buttons
-    st.write(f"**{step_info['question']}**")
+    # Display the question in a larger font using Markdown
+    st.markdown(f"<h3 style='font-size:22px;'>{step_info['question']}</h3>", unsafe_allow_html=True)
     
-    # Create two columns for the Yes and No button choices
+    # Define Yes and No buttons with color change on selection
     col1, col2 = st.columns(2)
     with col1:
-        if st.button(f"Yes, I need help with {step_name}"):
-            user_needs[step_name] = "Yes"
+        if st.button(f"Yes, I need help with {step_name}", key=f"yes_{step_name}"):
+            st.session_state.user_needs[step_name] = "Yes"
     with col2:
-        if st.button(f"No, I am comfortable with {step_name}"):
-            user_needs[step_name] = "No"
+        if st.button(f"No, I am comfortable with {step_name}", key=f"no_{step_name}"):
+            st.session_state.user_needs[step_name] = "No"
+    
+    # Display selected choice in light grey as feedback
+    if st.session_state.user_needs[step_name]:
+        st.write(f"**Selected:** {st.session_state.user_needs[step_name]}", unsafe_allow_html=True)
 
 # Generate tutorial based on responses
 if st.button("Generate Customized Guide"):
     st.write("### Your Customized Releafs Guide")
+    needs_tutorial = False
     
     # Display tutorials for steps marked as "Yes"
     for step_name, step_info in steps.items():
-        if user_needs.get(step_name) == "Yes":
+        if st.session_state.user_needs[step_name] == "Yes":
             st.subheader(step_name)
             content = load_step_content(step_info["file"])
             st.markdown(content)
