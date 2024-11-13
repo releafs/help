@@ -38,17 +38,22 @@ steps = {
 # Set up the app title and initial instructions
 st.title("Releafs Support System")
 st.write("""
-Welcome to the Releafs Support System! Please answer the following questions to let us know which steps you need assistance with. 
-Based on your responses, we'll generate a tailored guide to help you set up and use your MetaMask wallet to mint Releafs tokens.
+Welcome to the Releafs Support System! Navigate through the tabs below and let us know which steps you need assistance with. 
+Based on your responses, we'll generate a customized guide to help you set up and use your MetaMask wallet to mint Releafs tokens.
 """)
 
-# Questionnaire to determine user needs
+# Initialize user needs dictionary to store responses
 user_needs = {}
-st.header("Questionnaire")
-for step_name, step_info in steps.items():
-    user_needs[step_name] = st.radio(step_info["question"], ("Yes", "No"))
 
-# Initialize needs_tutorial outside the button block to avoid scope issues
+# Create tabs for each question
+tabs = st.tabs([step_name for step_name in steps.keys()])
+
+# Populate each tab with the corresponding question
+for i, (step_name, step_info) in enumerate(steps.items()):
+    with tabs[i]:
+        user_needs[step_name] = st.radio(step_info["question"], ("Yes", "No"))
+
+# Initialize needs_tutorial outside the button block
 needs_tutorial = False
 
 # Button to generate tutorial based on user responses
