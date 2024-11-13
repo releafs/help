@@ -1,4 +1,3 @@
-*Objective:* Buy and transfer ETH to MetaMask for transaction fees, and optionally swap for Base tokens.
 
 ---
 
