@@ -82,21 +82,21 @@ if st.button("Generate Customized Guide"):
     
     # Display tutorials for each step title, and content only for steps marked as "Yes"
     for idx, (step_name, step_info) in enumerate(steps.items(), start=1):
-        # Display content or note for each step depending on selection
+        # Display a larger, bold header for each step title
+        st.markdown(f"<h2 style='font-size:24px;'>Step {idx}: {step_name}</h2>", unsafe_allow_html=True)
+        
         if st.session_state.user_needs[step_name] == "Yes":
             if step_name == "Apply for Allowlist Access":
-                st.subheader(f"Step {idx}: {step_name}")
                 st.markdown(
                     f"[Click here to apply for the allowlist.]({step_info['link']})",
                     unsafe_allow_html=True
                 )
             else:
                 content = load_step_content(step_info["file"])
-                st.subheader(f"Step {idx}: {step_name}")
                 st.markdown(content)
             needs_tutorial = True
         else:
-            st.subheader(f"Step {idx}: {step_name}")
+            # Display "No assistance required" only for steps marked "No"
             st.write("_No assistance required for this step._")
 
     if not needs_tutorial:
