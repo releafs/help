@@ -11,7 +11,7 @@ def load_step_content(step_file):
     else:
         return "Content not available."
 
-# Define the steps with questions and file paths
+# Define the steps with questions, file paths, and specific links if needed
 steps = {
     "Set Up MetaMask Wallet": {
         "question": "Do you need help setting up a MetaMask wallet?",
@@ -27,7 +27,8 @@ steps = {
     },
     "Apply for Allowlist Access": {
         "question": "Do you need help applying for the Releafs allowlist?",
-        "file": "step4.md"
+        "file": "step4.md",
+        "link": "https://docs.google.com/forms/d/e/1FAIpQLScY_QzJp-O1obN4_fuOqqqsrE-D2Mx3ZaLxqQIRrngG9Dl_5w/viewform?usp=sf_link"
     },
     "Mint Releafs Tokens": {
         "question": "Would you like a guide on minting Releafs tokens on OpenSea?",
@@ -83,10 +84,17 @@ if st.button("Generate Customized Guide"):
     for idx, (step_name, step_info) in enumerate(steps.items(), start=1):
         st.subheader(f"Step {idx}: {step_name}")
         if st.session_state.user_needs[step_name] == "Yes":
+            # Load the content or show hyperlink if it's for the allowlist step
             content = load_step_content(step_info["file"])
             st.markdown(content)
+            
+            # Include hyperlink if this is the Allowlist step
+            if "link" in step_info:
+                st.markdown(f"[Apply for the allowlist here]({step_info['link']})")
+            
             needs_tutorial = True
         else:
+            # Display only "No assistance required" if the user selected No
             st.write("_No assistance required for this step._")
 
     if not needs_tutorial:
