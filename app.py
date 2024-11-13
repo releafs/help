@@ -27,8 +27,7 @@ steps = {
     },
     "Apply for Allowlist Access": {
         "question": "Do you need help applying for the Releafs allowlist?",
-        "file": "step4.md",
-        "link": "https://docs.google.com/forms/d/e/1FAIpQLScY_QzJp-O1obN4_fuOqqqsrE-D2Mx3ZaLxqQIRrngG9Dl_5w/viewform?usp=sf_link"
+        "file": "step4.md"
     },
     "Mint Releafs Tokens": {
         "question": "Would you like a guide on minting Releafs tokens on OpenSea?",
@@ -82,23 +81,12 @@ if st.button("Generate Customized Guide"):
     
     # Display tutorials for each step title, and content only for steps marked as "Yes"
     for idx, (step_name, step_info) in enumerate(steps.items(), start=1):
-        # Display a larger, bold header for each step title
-        st.markdown(f"<h2 style='font-size:24px;'>Step {idx}: {step_name}</h2>", unsafe_allow_html=True)
-        
-        # Only display content if "Yes" was selected
+        st.subheader(f"Step {idx}: {step_name}")
         if st.session_state.user_needs[step_name] == "Yes":
-            # For the Allowlist step, include a hyperlink
-            if step_name == "Apply for Allowlist Access":
-                st.markdown(
-                    f"[Click here to apply for the allowlist.]({step_info['link']})",
-                    unsafe_allow_html=True
-                )
-            else:
-                content = load_step_content(step_info["file"])
-                st.markdown(content)
+            content = load_step_content(step_info["file"])
+            st.markdown(content)
             needs_tutorial = True
         else:
-            # Display "No assistance required" only for steps marked "No"
             st.write("_No assistance required for this step._")
 
     if not needs_tutorial:
