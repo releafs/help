@@ -79,13 +79,15 @@ for step_name, step_info in steps.items():
 if st.button("Generate Customized Guide"):
     st.write("### Your Customized Releafs Guide")
     
-    # Display tutorials for steps marked as "Yes"
+    # Display tutorials for each step title, and content only for steps marked as "Yes"
     for step_name, step_info in steps.items():
+        st.subheader(step_name)
         if st.session_state.user_needs[step_name] == "Yes":
-            st.subheader(step_name)
             content = load_step_content(step_info["file"])
             st.markdown(content)
             needs_tutorial = True
+        else:
+            st.write("_No assistance required for this step._")
 
     if not needs_tutorial:
         st.info("It seems like you don’t need any tutorials. If you still need help, feel free to review the questions or reach out to our support team.")
