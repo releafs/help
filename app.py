@@ -51,7 +51,7 @@ needs_tutorial = False
 
 # Questionnaire with larger question fonts and button color indication on selection
 st.header("Questionnaire")
-for step_name, step_info in steps.items():
+for idx, (step_name, step_info) in enumerate(steps.items(), start=1):
     # Display the question in a larger font using Markdown
     st.markdown(f"<h3 style='font-size:22px;'>{step_info['question']}</h3>", unsafe_allow_html=True)
     
@@ -80,8 +80,8 @@ if st.button("Generate Customized Guide"):
     st.write("### Your Customized Releafs Guide")
     
     # Display tutorials for each step title, and content only for steps marked as "Yes"
-    for step_name, step_info in steps.items():
-        st.subheader(step_name)
+    for idx, (step_name, step_info) in enumerate(steps.items(), start=1):
+        st.subheader(f"Step {idx}: {step_name}")
         if st.session_state.user_needs[step_name] == "Yes":
             content = load_step_content(step_info["file"])
             st.markdown(content)
