@@ -46,6 +46,9 @@ Based on your responses, we'll generate a tailored guide to help you set up and 
 if "user_needs" not in st.session_state:
     st.session_state.user_needs = {step: None for step in steps.keys()}
 
+# Initialize needs_tutorial outside the button block to avoid scope issues
+needs_tutorial = False
+
 # Questionnaire with larger question fonts and button color indication on selection
 st.header("Questionnaire")
 for step_name, step_info in steps.items():
@@ -68,7 +71,6 @@ for step_name, step_info in steps.items():
 # Generate tutorial based on responses
 if st.button("Generate Customized Guide"):
     st.write("### Your Customized Releafs Guide")
-    needs_tutorial = False
     
     # Display tutorials for steps marked as "Yes"
     for step_name, step_info in steps.items():
@@ -81,7 +83,7 @@ if st.button("Generate Customized Guide"):
     if not needs_tutorial:
         st.info("It seems like you don’t need any tutorials. If you still need help, feel free to review the questions or reach out to our support team.")
 
-# Completion message
+# Completion message, only shown if tutorials were generated
 if needs_tutorial:
     st.write("""
     ### Congratulations!
