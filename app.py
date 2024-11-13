@@ -42,44 +42,88 @@ Welcome to the Releafs Support System! Please answer the questions below to let 
 Based on your responses, we'll generate a tailored guide to help you set up and use your MetaMask wallet to mint Releafs tokens.
 """)
 
-# Initialize session state to remember button clicks
-if "user_needs" not in st.session_state:
-    st.session_state.user_needs = {step: None for step in steps.keys()}
+# Add custom CSS to style the radio buttons to look like buttons and change color on selection
+st.markdown("""
+<style>
+/* Increase font size of questions */
+h3 {
+    font-size: 24px !important;
+}
 
-# Initialize needs_tutorial outside the button block to avoid scope issues
+/* Style the radio buttons */
+div[role='radiogroup'] > label {
+    display: none;
+}
+
+div[role='radiogroup'] {
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+div[role='radiogroup'] .streamlit-expanderHeader {
+    padding: 0;
+}
+
+div[role='radiogroup'] > div {
+    margin: 5px;
+}
+
+div[role='radiogroup'] > div > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60px;
+    width: 100%;
+    background-color: #0073e6;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+div[role='radiogroup'] > div:hover > div {
+    background-color: #005bb5;
+}
+
+div[role='radiogroup'] > div:focus > div {
+    outline: none;
+    box-shadow: none;
+}
+
+div[role='radiogroup'] > div:active > div {
+    background-color: #005bb5;
+}
+
+div[role='radiogroup'] > div[selected] > div {
+    background-color: grey !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# Initialize session state to remember selections
+if 'user_needs' not in st.session_state:
+    st.session_state.user_needs = {}
+
 needs_tutorial = False
 
-# Questionnaire with larger question fonts and button color indication on selection
+# Questionnaire with questions and custom-styled radio buttons
 st.header("Questionnaire")
 for step_name, step_info in steps.items():
-    # Display the question in a larger font using Markdown
-    st.markdown(f"<h3 style='font-size:22px;'>{step_info['question']}</h3>", unsafe_allow_html=True)
-    
-    # Define Yes and No buttons with conditional styling for selected states
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button(
-            f"{'✓ ' if st.session_state.user_needs[step_name] == 'Yes' else ''}Yes, I need help with {step_name}",
-            key=f"yes_{step_name}",
-            help="Click to select Yes",
-            args=(step_name, "Yes")
-        ):
-            st.session_state.user_needs[step_name] = "Yes"
+    st.markdown(f"<h3>{step_info['question']}</h3>", unsafe_allow_html=True)
+    options = ["Yes", "No"]
+    default_index = options.index(st.session_state.user_needs.get(step_name, "Yes")) if step_name in st.session_state.user_needs else 0
+    selection = st.radio(
+        label="",
+        options=options,
+        index=default_index,
+        key=step_name,
+        label_visibility='collapsed'
+    )
+    st.session_state.user_needs[step_name] = selection
 
-    with col2:
-        if st.button(
-            f"{'✓ ' if st.session_state.user_needs[step_name] == 'No' else ''}No, I am comfortable with {step_name}",
-            key=f"no_{step_name}",
-            help="Click to select No",
-            args=(step_name, "No")
-        ):
-            st.session_state.user_needs[step_name] = "No"
-    
 # Generate tutorial based on responses
 if st.button("Generate Customized Guide"):
     st.write("### Your Customized Releafs Guide")
-    
-    # Display tutorials for steps marked as "Yes"
     for step_name, step_info in steps.items():
         if st.session_state.user_needs[step_name] == "Yes":
             st.subheader(step_name)
@@ -90,7 +134,7 @@ if st.button("Generate Customized Guide"):
     if not needs_tutorial:
         st.info("It seems like you don’t need any tutorials. If you still need help, feel free to review the questions or reach out to our support team.")
 
-# Completion message, only shown if tutorials were generated
+# Completion message
 if needs_tutorial:
     st.write("""
     ### Congratulations!
