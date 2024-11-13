@@ -42,88 +42,66 @@ Welcome to the Releafs Support System! Please answer the questions below to let 
 Based on your responses, we'll generate a tailored guide to help you set up and use your MetaMask wallet to mint Releafs tokens.
 """)
 
-# Add custom CSS to style the radio buttons to look like buttons and change color on selection
+# Initialize session state to remember button clicks
+if "user_needs" not in st.session_state:
+    st.session_state.user_needs = {step: None for step in steps.keys()}
+
+# Define custom CSS for button-like divs with selection indication
 st.markdown("""
-<style>
-/* Increase font size of questions */
-h3 {
-    font-size: 24px !important;
-}
-
-/* Style the radio buttons */
-div[role='radiogroup'] > label {
-    display: none;
-}
-
-div[role='radiogroup'] {
-    flex-direction: row;
-    justify-content: flex-start;
-}
-
-div[role='radiogroup'] .streamlit-expanderHeader {
-    padding: 0;
-}
-
-div[role='radiogroup'] > div {
-    margin: 5px;
-}
-
-div[role='radiogroup'] > div > div {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 60px;
-    width: 100%;
-    background-color: #0073e6;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-div[role='radiogroup'] > div:hover > div {
-    background-color: #005bb5;
-}
-
-div[role='radiogroup'] > div:focus > div {
-    outline: none;
-    box-shadow: none;
-}
-
-div[role='radiogroup'] > div:active > div {
-    background-color: #005bb5;
-}
-
-div[role='radiogroup'] > div[selected] > div {
-    background-color: grey !important;
-}
-
-</style>
+    <style>
+    .option-button {
+        padding: 10px;
+        margin: 5px 0;
+        width: 100%;
+        text-align: center;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        display: inline-block;
+    }
+    .selected-yes {
+        background-color: lightgrey;
+        color: black;
+    }
+    .selected-no {
+        background-color: lightgrey;
+        color: black;
+    }
+    .unselected {
+        background-color: #f0f0f5;
+        color: black;
+    }
+    </style>
 """, unsafe_allow_html=True)
 
-# Initialize session state to remember selections
-if 'user_needs' not in st.session_state:
-    st.session_state.user_needs = {}
-
-needs_tutorial = False
-
-# Questionnaire with questions and custom-styled radio buttons
+# Questionnaire with larger question fonts and button color indication on selection
 st.header("Questionnaire")
 for step_name, step_info in steps.items():
-    st.markdown(f"<h3>{step_info['question']}</h3>", unsafe_allow_html=True)
-    options = ["Yes", "No"]
-    default_index = options.index(st.session_state.user_needs.get(step_name, "Yes")) if step_name in st.session_state.user_needs else 0
-    selection = st.radio(
-        label="",
-        options=options,
-        index=default_index,
-        key=step_name,
-        label_visibility='collapsed'
-    )
-    st.session_state.user_needs[step_name] = selection
+    # Display the question in a larger font using Markdown
+    st.markdown(f"<h3 style='font-size:22px;'>{step_info['question']}</h3>", unsafe_allow_html=True)
+    
+    # Define Yes and No divs with conditional styling for selected states
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button(f"Yes, I need help with {step_name}", key=f"yes_{step_name}"):
+            st.session_state.user_needs[step_name] = "Yes"
+        # Show the selection as highlighted if selected
+        yes_class = "selected-yes" if st.session_state.user_needs[step_name] == "Yes" else "unselected"
+        st.markdown(f"<div class='option-button {yes_class}'>Yes, I need help with {step_name}</div>", unsafe_allow_html=True)
+
+    with col2:
+        if st.button(f"No, I am comfortable with {step_name}", key=f"no_{step_name}"):
+            st.session_state.user_needs[step_name] = "No"
+        # Show the selection as highlighted if selected
+        no_class = "selected-no" if st.session_state.user_needs[step_name] == "No" else "unselected"
+        st.markdown(f"<div class='option-button {no_class}'>No, I am comfortable with {step_name}</div>", unsafe_allow_html=True)
 
 # Generate tutorial based on responses
 if st.button("Generate Customized Guide"):
     st.write("### Your Customized Releafs Guide")
+    needs_tutorial = False
+    
+    # Display tutorials for steps marked as "Yes"
     for step_name, step_info in steps.items():
         if st.session_state.user_needs[step_name] == "Yes":
             st.subheader(step_name)
@@ -134,7 +112,7 @@ if st.button("Generate Customized Guide"):
     if not needs_tutorial:
         st.info("It seems like you don’t need any tutorials. If you still need help, feel free to review the questions or reach out to our support team.")
 
-# Completion message
+# Completion message, only shown if tutorials were generated
 if needs_tutorial:
     st.write("""
     ### Congratulations!
