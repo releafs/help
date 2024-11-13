@@ -46,62 +46,17 @@ Based on your responses, we'll generate a tailored guide to help you set up and 
 if "user_needs" not in st.session_state:
     st.session_state.user_needs = {step: None for step in steps.keys()}
 
-# Initialize needs_tutorial outside the button block to avoid scope issues
-needs_tutorial = False
-
-# Define custom CSS for clickable divs
-st.markdown("""
-    <style>
-    .option-button {
-        padding: 10px;
-        margin: 5px 0;
-        width: 100%;
-        text-align: center;
-        border-radius: 5px;
-        cursor: pointer;
-        font-weight: bold;
-        display: inline-block;
-    }
-    .selected-yes {
-        background-color: lightgrey;
-        color: black;
-    }
-    .selected-no {
-        background-color: lightgrey;
-        color: black;
-    }
-    .unselected {
-        background-color: #f0f0f5;
-        color: black;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-# Questionnaire with larger question fonts and button color indication on selection
+# Questionnaire with clear radio buttons for selections
 st.header("Questionnaire")
 for step_name, step_info in steps.items():
-    # Display the question in a larger font using Markdown
-    st.markdown(f"<h3 style='font-size:22px;'>{step_info['question']}</h3>", unsafe_allow_html=True)
-    
-    # Define Yes and No divs with conditional styling for selected states
-    col1, col2 = st.columns(2)
-    with col1:
-        yes_class = "selected-yes" if st.session_state.user_needs[step_name] == "Yes" else "unselected"
-        if st.markdown(
-            f"<div class='option-button {yes_class}' onclick='document.querySelector(\"#yes_{step_name}\").click()'>"
-            f"Yes, I need help with {step_name}</div>",
-            unsafe_allow_html=True
-        ):
-            st.session_state.user_needs[step_name] = "Yes"
-
-    with col2:
-        no_class = "selected-no" if st.session_state.user_needs[step_name] == "No" else "unselected"
-        if st.markdown(
-            f"<div class='option-button {no_class}' onclick='document.querySelector(\"#no_{step_name}\").click()'>"
-            f"No, I am comfortable with {step_name}</div>",
-            unsafe_allow_html=True
-        ):
-            st.session_state.user_needs[step_name] = "No"
+    # Display the question with a radio selection
+    st.write(f"**{step_info['question']}**")
+    st.session_state.user_needs[step_name] = st.radio(
+        f"Choose for {step_name}",
+        options=["Yes, I need help", "No, I am comfortable"],
+        index=1 if st.session_state.user_needs[step_name] == "No" else 0,
+        key=step_name
+    )
 
 # Generate tutorial based on responses
 if st.button("Generate Customized Guide"):
@@ -110,7 +65,7 @@ if st.button("Generate Customized Guide"):
     
     # Display tutorials for steps marked as "Yes"
     for step_name, step_info in steps.items():
-        if st.session_state.user_needs[step_name] == "Yes":
+        if st.session_state.user_needs[step_name] == "Yes, I need help":
             st.subheader(step_name)
             content = load_step_content(step_info["file"])
             st.markdown(content)
