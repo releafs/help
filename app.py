@@ -48,10 +48,12 @@ st.header("Questionnaire")
 for step_name, step_info in steps.items():
     user_needs[step_name] = st.radio(step_info["question"], ("Yes", "No"))
 
+# Initialize needs_tutorial outside the button block to avoid scope issues
+needs_tutorial = False
+
 # Button to generate tutorial based on user responses
 if st.button("Generate Tutorial"):
     st.write("### Your Customized Releafs Guide")
-    needs_tutorial = False
     
     # Display selected steps based on user input
     for step_name, step_info in steps.items():
