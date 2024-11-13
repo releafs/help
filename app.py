@@ -1,14 +1,7 @@
 import streamlit as st
 import os
 
-# Set up the app title and initial instructions
-st.title("Releafs Support System")
-st.write("""
-Welcome to the Releafs Support System! This guide will take you step-by-step through setting up MetaMask, 
-connecting to the Base network, funding your wallet, applying for allowlist access, and minting Releafs tokens.
-""")
-
-# Helper function to load content from a Markdown file
+# Function to load content from a Markdown file
 def load_step_content(step_file):
     file_path = os.path.join("contents", step_file)
     if os.path.exists(file_path):
@@ -18,32 +11,63 @@ def load_step_content(step_file):
     else:
         return "Content not available."
 
-# Define the steps and corresponding file names
+# Define the steps with corresponding questions and Markdown file names
 steps = {
-    "Step 1: Set Up MetaMask Wallet": "step1.md",
-    "Step 2: Connect MetaMask to Base Network": "step2.md",
-    "Step 3: Fund MetaMask Wallet with Base Tokens": "step3.md",
-    "Step 4: Apply for Allowlist Access": "step4.md",
-    "Step 5: Mint Releafs Tokens": "step5.md"
+    "Set Up MetaMask Wallet": {
+        "question": "Do you need help setting up a MetaMask wallet?",
+        "file": "step1.md"
+    },
+    "Connect MetaMask to Base Network": {
+        "question": "Do you need guidance on connecting MetaMask to the Base network?",
+        "file": "step2.md"
+    },
+    "Fund MetaMask Wallet with Base Tokens": {
+        "question": "Do you need assistance with funding your MetaMask wallet with Base tokens?",
+        "file": "step3.md"
+    },
+    "Apply for Allowlist Access": {
+        "question": "Do you need help applying for the Releafs allowlist?",
+        "file": "step4.md"
+    },
+    "Mint Releafs Tokens": {
+        "question": "Would you like a guide on minting Releafs tokens on OpenSea?",
+        "file": "step5.md"
+    }
 }
 
-# Sidebar for navigation
-st.sidebar.title("Navigation")
-selected_step = st.sidebar.radio("Choose a step:", list(steps.keys()))
+# Set up the app title and initial instructions
+st.title("Releafs Support System")
+st.write("""
+Welcome to the Releafs Support System! Please answer the following questions to let us know which steps you need assistance with. 
+Based on your responses, we'll generate a tailored guide to help you set up and use your MetaMask wallet to mint Releafs tokens.
+""")
 
-# Display the selected step's content
-st.header(selected_step)
-content = load_step_content(steps[selected_step])
-st.markdown(content)
+# Questionnaire to determine user needs
+user_needs = {}
+st.header("Questionnaire")
+for step_name, step_info in steps.items():
+    user_needs[step_name] = st.radio(step_info["question"], ("Yes", "No"))
 
-# Confirmation buttons at the end of each step
-if st.button("Confirm Completion"):
-    st.success(f"You’ve completed {selected_step}. Proceed to the next step from the sidebar.")
+# Button to generate tutorial based on user responses
+if st.button("Generate Tutorial"):
+    st.write("### Your Customized Releafs Guide")
+    needs_tutorial = False
+    
+    # Display selected steps based on user input
+    for step_name, step_info in steps.items():
+        if user_needs[step_name] == "Yes":
+            st.subheader(step_name)
+            content = load_step_content(step_info["file"])
+            st.markdown(content)
+            needs_tutorial = True
 
-# Final congratulations message when the last step is completed
-if selected_step == "Step 5: Mint Releafs Tokens":
-    st.balloons()
+    if not needs_tutorial:
+        st.info("It seems like you don’t need any tutorials. If you still need help, feel free to review the questions or reach out to our support team.")
+
+# Final congratulations message if they went through all selected tutorials
+if needs_tutorial:
     st.write("""
-    Congratulations on completing the Releafs setup! You’re now ready to mint and manage Releafs tokens.
-    Remember to keep your MetaMask and recovery phrases secure.
+    ### Congratulations!
+    You have completed the necessary steps to set up your MetaMask and mint Releafs tokens. If you have further questions, don't hesitate to ask.
     """)
+    st.balloons()
