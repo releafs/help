@@ -1,4 +1,3 @@
-# Step 4: Apply for Allowlist Access
 *Objective:* Submit an application to gain approval for minting Releafs tokens.
 
 ---
