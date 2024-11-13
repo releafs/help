@@ -98,4 +98,3 @@ if needs_tutorial:
     ### Congratulations!
     You have completed the necessary steps to set up your MetaMask and mint Releafs tokens. If you have further questions, don't hesitate to ask.
     """)
-    st.balloons()
