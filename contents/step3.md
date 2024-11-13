@@ -1,4 +1,3 @@
-# Step 3: Fund MetaMask Wallet with Base Tokens
 *Objective:* Buy and transfer ETH to MetaMask for transaction fees, and optionally swap for Base tokens.
 
 ---
